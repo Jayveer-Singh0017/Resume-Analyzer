@@ -31,25 +31,6 @@ public class GeminiService {
         System.out.println("API KEY EMPTY: " + (apiKey == null || apiKey.isBlank()));
     }
 
-    public String getModels() {
-
-        GeminiResponse response =  webClient
-                .get()
-                .uri(apiUrl + "/models")
-                .header("x-goog-api-key", apiKey)
-                .retrieve()
-                .bodyToMono(GeminiResponse.class)
-                .block();
-
-        return  response
-                .getCandidates()
-                .get(0)
-                .getContent()
-                .getParts()
-                .get(0)
-                .getText();
-    }
-
     public String generateContent(String prompt) {
 
         try {

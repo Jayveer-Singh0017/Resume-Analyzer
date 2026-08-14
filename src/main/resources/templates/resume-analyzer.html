@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analyzer</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/resume-analyzer.css}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="top-header">
+
+        <div class="header-inner">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    ✦
+                </div>
+
+                <div>
+                    <div class="brand-title">
+                        Resume Analyzer
+                    </div>
+
+                    <div class="brand-subtitle">
+                        AI-powered resume insights
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="header-actions">
+            <a href="/chat" class="chat-button">
+                <span>✦</span>
+                Chat with AI
+            </a>
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-container">
+
+
+        <!-- ================= WELCOME ================= -->
+
+        <section id="welcome" class="welcome-section">
+
+            <div class="welcome-icon">
+                ✦
+            </div>
+
+            <h1>
+                Analyze Your Resume
+                <span>with AI</span>
+            </h1>
+
+            <p class="welcome-description">
+
+                Upload your resume and get an intelligent analysis
+                of your skills, strengths, weaknesses, recommended
+                skills and suitable job roles.
+
+            </p>
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        Resume Analysis
+                    </h3>
+
+                    <p>
+                        Get a detailed AI-powered analysis of
+                        your resume.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        💡
+                    </div>
+
+                    <h3>
+                        Smart Suggestions
+                    </h3>
+
+                    <p>
+                        Identify areas where you can improve
+                        your professional profile.
+                    </p>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        Career Guidance
+                    </h3>
+
+                    <p>
+                        Discover job roles that match your
+                        skills and experience.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RESULT ================= -->
+
+        <section id="result" class="result-section">
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ================= BOTTOM UPLOADER ================= -->
+
+    <div class="bottom-area">
+
+
+        <!-- LOADING -->
+
+        <div id="loading" class="loading-container">
+
+            <div class="loading-spinner"></div>
+
+            <span>
+                AI is analyzing your resume...
+            </span>
+
+        </div>
+
+
+        <!-- UPLOAD BOX -->
+
+        <div class="upload-box">
+
+
+            <!-- FILE BUTTON -->
+
+            <label
+                    for="resumeFile"
+                    class="file-button">
+
+                <span class="paperclip">
+                    📎
+                </span>
+
+                <span>
+                    Upload
+                </span>
+
+            </label>
+
+
+            <input
+                    type="file"
+                    id="resumeFile"
+                    accept=".pdf,application/pdf"
+                    hidden>
+
+
+            <!-- FILE INFORMATION -->
+
+            <div class="file-information">
+
+                <div
+                        id="filePlaceholder"
+                        class="file-placeholder">
+
+                    Upload your resume PDF
+
+                </div>
+
+
+                <div
+                        id="fileName"
+                        class="file-name">
+
+                </div>
+
+
+                <div
+                        id="fileType"
+                        class="file-type">
+
+                </div>
+
+            </div>
+
+
+            <!-- ANALYZE BUTTON -->
+
+            <button
+                    id="analyzeButton"
+                    type="button">
+
+                <span>
+                    Analyze Resume
+                </span>
+
+                <span class="button-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+        <div class="upload-note">
+
+            PDF files only • Your resume is analyzed securely
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script
+        th:src="@{/js/resume-analyzer.js}">
+</script>
+
+</body>
+
+</html>

@@ -2,7 +2,6 @@ package com.resumeanalyzer.service;
 
 import com.resumeanalyzer.dto.ResumeAnalysisResponse;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class ResumeAnalyzerService {
