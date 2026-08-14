@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analyzer | AI Resume Analysis</title>
+
+    <style>
+
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f7f7f8;
+            --surface: #ffffff;
+            --surface-soft: #f1f1f1;
+            --border: #e5e5e5;
+            --text: #1f1f1f;
+            --text-light: #6b6b6b;
+            --primary: #111111;
+            --success: #16803c;
+            --danger: #c62828;
+            --purple: #6d4aff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    Helvetica,
+                    Arial,
+                    sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           APP LAYOUT
+        ===================================================== */
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            height: 64px;
+
+            background: rgba(255, 255, 255, 0.92);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 10px;
+
+            background: #111;
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 5px;
+        }
+
+
+        /* =====================================================
+           MAIN CHAT AREA
+        ===================================================== */
+
+        .main {
+            width: 100%;
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 55px 24px 190px;
+
+            flex: 1;
+        }
+
+
+        /* =====================================================
+           WELCOME SCREEN
+        ===================================================== */
+
+        .welcome {
+            min-height: 65vh;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            padding-bottom: 60px;
+        }
+
+        .welcome-icon {
+            width: 72px;
+            height: 72px;
+
+            border-radius: 20px;
+
+            background: #111;
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                    0 10px 30px rgba(0, 0, 0, 0.14);
+        }
+
+        .welcome h1 {
+            font-size: 42px;
+            line-height: 1.15;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 14px;
+        }
+
+        .welcome p {
+            max-width: 600px;
+
+            color: var(--text-light);
+
+            font-size: 16px;
+
+            line-height: 1.6;
+        }
+
+        .welcome-features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 14px;
+
+            width: 100%;
+            max-width: 720px;
+
+            margin-top: 38px;
+        }
+
+        .feature {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            text-align: left;
+
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .feature h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .feature p {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           CHAT RESULT
+        ===================================================== */
+
+        #result {
+            display: none;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 14px;
+
+            margin-bottom: 32px;
+        }
+
+        .avatar {
+            flex-shrink: 0;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .ai-avatar {
+            background: #111;
+            color: white;
+        }
+
+        .user-avatar {
+            background: #e9e9e9;
+            color: #444;
+        }
+
+        .message-content {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 8px;
+        }
+
+        .message-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .message-text {
+            font-size: 15px;
+
+            line-height: 1.75;
+
+            color: #303030;
+        }
+
+
+        /* =====================================================
+           ANALYSIS HEADER
+        ===================================================== */
+
+        .analysis-title {
+            margin-bottom: 26px;
+        }
+
+        .analysis-title h1 {
+            font-size: 30px;
+
+            letter-spacing: -0.8px;
+
+            margin-bottom: 8px;
+        }
+
+        .analysis-title p {
+            color: var(--text-light);
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ASSESSMENT CARD
+        ===================================================== */
+
+        .assessment-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+            margin-bottom: 24px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .assessment-header {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 14px;
+        }
+
+        .assessment-icon {
+            width: 32px;
+            height: 32px;
+
+            border-radius: 9px;
+
+            background: #f0edff;
+
+            color: var(--purple);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 15px;
+        }
+
+        .assessment-header h2 {
+            font-size: 17px;
+        }
+
+        .assessment-text {
+            font-size: 15px;
+
+            line-height: 1.8;
+
+            color: #444;
+        }
+
+
+        /* =====================================================
+           RESULT GRID
+        ===================================================== */
+
+        .result-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+        }
+
+
+        /* =====================================================
+           RESULT CARD
+        ===================================================== */
+
+        .result-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            box-shadow: var(--shadow);
+
+            transition: transform 0.2s ease,
+            box-shadow 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                    0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 17px;
+        }
+
+        .card-icon {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 9px;
+
+            background: #f3f3f3;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+        }
+
+        .card-count {
+            margin-left: auto;
+
+            background: #f1f1f1;
+
+            color: #777;
+
+            font-size: 11px;
+
+            padding: 4px 8px;
+
+            border-radius: 20px;
+        }
+
+
+        /* =====================================================
+           LIST
+        ===================================================== */
+
+        .result-list {
+            list-style: none;
+        }
+
+        .result-list li {
+            position: relative;
+
+            padding-left: 20px;
+
+            margin-bottom: 12px;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            color: #444;
+        }
+
+        .result-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-list li::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 9px;
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #777;
+        }
+
+
+        /* =====================================================
+           SKILLS
+        ===================================================== */
+
+        .skills-card {
+            grid-column: 1 / -1;
+        }
+
+        .skills {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 9px;
+        }
+
+        .skill {
+            background: #f4f4f4;
+
+            border: 1px solid #e4e4e4;
+
+            padding: 8px 13px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            color: #333;
+
+            font-weight: 500;
+        }
+
+
+        /* =====================================================
+           STRENGTHS
+        ===================================================== */
+
+        .strengths .card-icon {
+            background: #e9f8ef;
+            color: var(--success);
+        }
+
+        .strengths .result-list li::before {
+            background: var(--success);
+        }
+
+
+        /* =====================================================
+           WEAKNESSES
+        ===================================================== */
+
+        .weaknesses .card-icon {
+            background: #fff0f0;
+            color: var(--danger);
+        }
+
+        .weaknesses .result-list li::before {
+            background: var(--danger);
+        }
+
+
+        /* =====================================================
+           RECOMMENDATIONS
+        ===================================================== */
+
+        .recommendations {
+            grid-column: 1 / -1;
+        }
+
+        .recommendations .card-icon {
+            background: #f0edff;
+            color: var(--purple);
+        }
+
+
+        /* =====================================================
+           JOB ROLES
+        ===================================================== */
+
+        .job-roles {
+            grid-column: 1 / -1;
+        }
+
+        .job-tags {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+        .job-tag {
+            border: 1px solid #ddd;
+
+            background: #fafafa;
+
+            border-radius: 10px;
+
+            padding: 10px 14px;
+
+            font-size: 13px;
+
+            font-weight: 500;
+        }
+
+
+        /* =====================================================
+           SUGGESTIONS
+        ===================================================== */
+
+        .suggestions {
+            grid-column: 1 / -1;
+        }
+
+
+        /* =====================================================
+           SUCCESS MESSAGE
+        ===================================================== */
+
+        .success-message {
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            background: #edf9f1;
+
+            border: 1px solid #ccebd6;
+
+            color: #176b36;
+
+            border-radius: 10px;
+
+            padding: 11px 14px;
+
+            font-size: 13px;
+
+            margin-bottom: 25px;
+        }
+
+        .success-dot {
+            width: 7px;
+            height: 7px;
+
+            background: #1c9c4a;
+
+            border-radius: 50%;
+        }
+
+
+        /* =====================================================
+           BOTTOM COMPOSER
+        ===================================================== */
+
+        .composer-wrapper {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 90;
+
+            background:
+                    linear-gradient(
+                            to top,
+                            rgba(247,247,248,1) 70%,
+                            rgba(247,247,248,0)
+                    );
+
+            padding: 25px 20px 22px;
+        }
+
+        .composer {
+            max-width: 850px;
+
+            margin: auto;
+
+            background: white;
+
+            border: 1px solid #dcdcdc;
+
+            border-radius: 16px;
+
+            box-shadow:
+                    0 5px 30px rgba(0, 0, 0, 0.10);
+
+            padding: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        /* =====================================================
+           FILE BUTTON
+        ===================================================== */
+
+        .file-label {
+            width: 45px;
+            height: 45px;
+
+            flex-shrink: 0;
+
+            border-radius: 11px;
+
+            background: #f2f2f2;
+
+            border: 1px solid #e4e4e4;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            font-size: 19px;
+
+            transition: all 0.2s ease;
+        }
+
+        .file-label:hover {
+            background: #e8e8e8;
+        }
+
+        #resumeFile {
+            display: none;
+        }
+
+
+        /* =====================================================
+           FILE INFO
+        ===================================================== */
+
+        .file-info {
+            flex: 1;
+
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: center;
+        }
+
+        .file-placeholder {
+            color: #777;
+
+            font-size: 14px;
+        }
+
+        .file-name {
+            font-size: 14px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+        .file-type {
+            font-size: 11px;
+
+            color: #999;
+
+            margin-top: 2px;
+        }
+
+
+        /* =====================================================
+           ANALYZE BUTTON
+        ===================================================== */
+
+        #analyzeButton {
+            border: none;
+
+            background: #111;
+
+            color: white;
+
+            height: 45px;
+
+            padding: 0 22px;
+
+            border-radius: 11px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+
+            white-space: nowrap;
+        }
+
+        #analyzeButton:hover {
+            background: #2a2a2a;
+
+            transform: translateY(-1px);
+        }
+
+        #analyzeButton:disabled {
+            background: #999;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        #loading {
+            display: none;
+
+            max-width: 850px;
+
+            margin: 0 auto 12px;
+
+            padding: 0 5px;
+
+            font-size: 13px;
+
+            color: #666;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .loading-dots {
+            display: flex;
+
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 5px;
+            height: 5px;
+
+            background: #777;
+
+            border-radius: 50%;
+
+            animation: bounce 1.2s infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .error {
+            background: #fff0f0;
+
+            border: 1px solid #f1caca;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            color: #a32121;
+        }
+
+        .error h2 {
+            margin-bottom: 10px;
+
+            font-size: 17px;
+        }
+
+        .error p {
+            white-space: pre-wrap;
+
+            line-height: 1.6;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .main {
+                padding:
+                        35px 15px 180px;
+            }
+
+            .welcome h1 {
+                font-size: 32px;
+            }
+
+            .welcome p {
+                font-size: 14px;
+            }
+
+            .welcome-features {
+                grid-template-columns: 1fr;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .skills-card,
+            .recommendations,
+            .job-roles,
+            .suggestions {
+                grid-column: auto;
+            }
+
+            .composer {
+                border-radius: 14px;
+            }
+
+            #analyzeButton {
+                padding: 0 15px;
+            }
+
+            .file-type {
+                display: none;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .composer {
+                padding: 8px;
+            }
+
+            .file-label {
+                width: 42px;
+                height: 42px;
+            }
+
+            #analyzeButton {
+                height: 42px;
+
+                font-size: 12px;
+
+                padding: 0 12px;
+            }
+
+            .file-name,
+            .file-placeholder {
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="header-content">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    ✦
+                </div>
+
+                <div class="brand-name">
+                    Resume Analyzer
+                </div>
+
+                <span class="brand-subtitle">
+                    AI-powered career insights
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             WELCOME
+        ================================================== -->
+
+        <div id="welcome" class="welcome">
+
+            <div class="welcome-icon">
+                ✦
+            </div>
+
+            <h1>
+                Analyze your resume<br>
+                with AI
+            </h1>
+
+            <p>
+                Upload your resume and get personalized insights
+                about your skills, strengths, weaknesses,
+                suitable job roles and areas for improvement.
+            </p>
+
+
+            <div class="welcome-features">
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        Resume Analysis
+                    </h3>
+
+                    <p>
+                        Get an AI-powered review of your resume
+                        content and profile.
+                    </p>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        💡
+                    </div>
+
+                    <h3>
+                        Smart Suggestions
+                    </h3>
+
+                    <p>
+                        Discover skills and improvements that
+                        can strengthen your resume.
+                    </p>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        🎯
+                    </div>
+
+                    <h3>
+                        Career Direction
+                    </h3>
+
+                    <p>
+                        Find job roles that match your current
+                        skills and experience.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             RESULT
+        ================================================== -->
+
+        <div id="result">
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         BOTTOM COMPOSER
+    ====================================================== -->
+
+    <div class="composer-wrapper">
+
+
+        <p id="loading">
+
+            <span class="loading-dots">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </span>
+
+            AI is analyzing your resume...
+
+        </p>
+
+
+        <div class="composer">
+
+
+            <!-- FILE UPLOAD -->
+
+            <label
+                    for="resumeFile"
+                    class="file-label"
+                    title="Upload PDF">
+                📎
+            </label>
+
+            <input
+                    type="file"
+                    id="resumeFile"
+                    accept=".pdf,application/pdf"
+            >
+
+
+            <!-- FILE INFORMATION -->
+
+            <div class="file-info">
+
+                <div
+                        id="filePlaceholder"
+                        class="file-placeholder">
+                    Upload your resume PDF
+                </div>
+
+                <div
+                        id="fileName"
+                        class="file-name"
+                        style="display:none;">
+                </div>
+
+                <div
+                        id="fileType"
+                        class="file-type"
+                        style="display:none;">
+                    PDF document
+                </div>
+
+            </div>
+
+
+            <!-- ANALYZE -->
+
+            <button
+                    id="analyzeButton"
+                    onclick="analyzeResume()">
+
+                Analyze Resume
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+    /* =========================================================
+       FILE SELECTION
+    ========================================================= */
+
+    document
+        .getElementById("resumeFile")
+        .addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            const placeholder =
+                document.getElementById("filePlaceholder");
+
+            const fileName =
+                document.getElementById("fileName");
+
+            const fileType =
+                document.getElementById("fileType");
+
+
+            if (file) {
+
+                placeholder.style.display = "none";
+
+                fileName.style.display = "block";
+
+                fileType.style.display = "block";
+
+                fileName.innerText = file.name;
+
+            }
+
+        });
+
+
+
+    /* =========================================================
+       ANALYZE RESUME
+    ========================================================= */
+
+    async function analyzeResume() {
+
+
+        const fileInput =
+            document.getElementById("resumeFile");
+
+        const loading =
+            document.getElementById("loading");
+
+        const result =
+            document.getElementById("result");
+
+        const welcome =
+            document.getElementById("welcome");
+
+        const analyzeButton =
+            document.getElementById("analyzeButton");
+
+
+        console.log("Analyze button clicked.");
+
+
+        /* -----------------------------------------------------
+           CHECK FILE
+        ----------------------------------------------------- */
+
+        if (fileInput.files.length === 0) {
+
+            alert("Please select a PDF file first.");
+
+            return;
+
+        }
+
+
+        const file =
+            fileInput.files[0];
+
+
+        console.log("Selected file:", file.name);
+        console.log("File type:", file.type);
+        console.log("File size:", file.size);
+
+
+        /* -----------------------------------------------------
+           CHECK PDF
+        ----------------------------------------------------- */
+
+        if (
+            file.type !== "application/pdf" &&
+            !file.name.toLowerCase().endsWith(".pdf")
+        ) {
+
+            alert("Please select a PDF file.");
+
+            return;
+
+        }
+
+
+        /* -----------------------------------------------------
+           FORM DATA
+        ----------------------------------------------------- */
+
+        const formData =
+            new FormData();
+
+        formData.append("file", file);
+
+
+        /* -----------------------------------------------------
+           LOADING
+        ----------------------------------------------------- */
+
+        loading.style.display = "flex";
+
+        result.innerHTML = "";
+
+        analyzeButton.disabled = true;
+
+        analyzeButton.innerText = "Analyzing...";
+
+
+        try {
+
+
+            /* -------------------------------------------------
+               BACKEND REQUEST
+            ------------------------------------------------- */
+
+            const response =
+                await fetch(
+                    "/api/resume/analyze-pdf",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            console.log(
+                "Backend response status:",
+                response.status
+            );
+
+
+            /* -------------------------------------------------
+               READ RESPONSE
+            ------------------------------------------------- */
+
+            const responseText =
+                await response.text();
+
+
+            console.log(
+                "Raw backend response:",
+                responseText
+            );
+
+
+            /* -------------------------------------------------
+               HTTP ERROR
+            ------------------------------------------------- */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Backend returned HTTP " +
+                    response.status +
+                    "\n\n" +
+                    responseText
+                );
+
+            }
+
+
+            /* -------------------------------------------------
+               PARSE JSON
+            ------------------------------------------------- */
+
+            let data;
+
+
+            try {
+
+                data =
+                    JSON.parse(responseText);
+
+            } catch (jsonError) {
+
+                throw new Error(
+                    "Backend response is not valid JSON.\n\n" +
+                    responseText
+                );
+
+            }
+
+
+            console.log(
+                "Parsed JSON:",
+                data
+            );
+
+
+            /* -------------------------------------------------
+               DISPLAY RESULT
+            ------------------------------------------------- */
+
+            displayResult(data);
+
+
+            loading.style.display = "none";
+
+            welcome.style.display = "none";
+
+            result.style.display = "block";
+
+
+            /* Scroll to result */
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+
+        }
+
+
+        catch (error) {
+
+
+            console.error(
+                "ERROR:",
+                error
+            );
+
+
+            loading.style.display = "none";
+
+
+            result.style.display = "block";
+
+            welcome.style.display = "none";
+
+
+            result.innerHTML = `
+
+                <div class="error">
+
+                    <h2>
+                        ⚠️ Analysis Failed
+                    </h2>
+
+                    <p>
+                        ${escapeHtml(error.message)}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        finally {
+
+            analyzeButton.disabled = false;
+
+            analyzeButton.innerText =
+                "Analyze Resume";
+
+        }
+
+    }
+
+
+
+    /* =========================================================
+       DISPLAY RESULT
+    ========================================================= */
+
+    function displayResult(data) {
+
+
+        const result =
+            document.getElementById("result");
+
+
+        const skills =
+            Array.isArray(data.skills)
+                ? data.skills
+                : [];
+
+
+        const strengths =
+            Array.isArray(data.strengths)
+                ? data.strengths
+                : [];
+
+
+        const weaknesses =
+            Array.isArray(data.weaknesses)
+                ? data.weaknesses
+                : [];
+
+
+        const recommendedSkills =
+            Array.isArray(data.recommendedSkills)
+                ? data.recommendedSkills
+                : [];
+
+
+        const jobRoles =
+            Array.isArray(data.suitableJobRoles)
+                ? data.suitableJobRoles
+                : [];
+
+
+        const suggestions =
+            Array.isArray(data.suggestions)
+                ? data.suggestions
+                : [];
+
+
+        result.innerHTML = `
+
+
+            <!-- =============================================
+                 AI MESSAGE
+            ============================================== -->
+
+            <div class="chat-message">
+
+                <div class="avatar ai-avatar">
+                    AI
+                </div>
+
+
+                <div class="message-content">
+
+                    <div class="message-header">
+
+                        <span class="message-name">
+                            Resume AI
+                        </span>
+
+                        <span class="message-time">
+                            Analysis complete
+                        </span>
+
+                    </div>
+
+
+                    <div class="analysis-title">
+
+                        <h1>
+                            Resume Analysis
+                        </h1>
+
+                        <p>
+                            Here's a detailed analysis of your
+                            resume and career profile.
+                        </p>
+
+                    </div>
+
+
+                    <!-- SUCCESS -->
+
+                    <div class="success-message">
+
+                        <span class="success-dot"></span>
+
+                        Resume analyzed successfully
+
+                    </div>
+
+
+                    <!-- OVERALL ASSESSMENT -->
+
+                    <div class="assessment-card">
+
+                        <div class="assessment-header">
+
+                            <div class="assessment-icon">
+                                ✦
+                            </div>
+
+                            <h2>
+                                Overall Assessment
+                            </h2>
+
+                        </div>
+
+
+                        <p class="assessment-text">
+
+                            ${escapeHtml(
+            data.overallAssessment
+        )}
+
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                         RESULT GRID
+                    ====================================== -->
+
+                    <div class="result-grid">
+
+
+                        <!-- SKILLS -->
+
+                        <div class="result-card skills-card">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    ⚡
+                                </div>
+
+                                <h3>
+                                    Skills
+                                </h3>
+
+                                <span class="card-count">
+                                    ${skills.length}
+                                </span>
+
+                            </div>
+
+
+                            <div class="skills">
+
+                                ${createSkillTags(skills)}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- STRENGTHS -->
+
+                        <div class="result-card strengths">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    ✓
+                                </div>
+
+                                <h3>
+                                    Strengths
+                                </h3>
+
+                                <span class="card-count">
+                                    ${strengths.length}
+                                </span>
+
+                            </div>
+
+
+                            <ul class="result-list">
+
+                                ${createList(strengths)}
+
+                            </ul>
+
+                        </div>
+
+
+
+                        <!-- WEAKNESSES -->
+
+                        <div class="result-card weaknesses">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    !
+                                </div>
+
+                                <h3>
+                                    Areas to Improve
+                                </h3>
+
+                                <span class="card-count">
+                                    ${weaknesses.length}
+                                </span>
+
+                            </div>
+
+
+                            <ul class="result-list">
+
+                                ${createList(weaknesses)}
+
+                            </ul>
+
+                        </div>
+
+
+
+                        <!-- RECOMMENDED SKILLS -->
+
+                        <div class="result-card recommendations">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    ✦
+                                </div>
+
+                                <h3>
+                                    Recommended Skills
+                                </h3>
+
+                                <span class="card-count">
+                                    ${recommendedSkills.length}
+                                </span>
+
+                            </div>
+
+
+                            <div class="skills">
+
+                                ${createSkillTags(
+            recommendedSkills
+        )}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- JOB ROLES -->
+
+                        <div class="result-card job-roles">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    🎯
+                                </div>
+
+                                <h3>
+                                    Suitable Job Roles
+                                </h3>
+
+                                <span class="card-count">
+                                    ${jobRoles.length}
+                                </span>
+
+                            </div>
+
+
+                            <div class="job-tags">
+
+                                ${createJobTags(jobRoles)}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- SUGGESTIONS -->
+
+                        <div class="result-card suggestions">
+
+                            <div class="card-header">
+
+                                <div class="card-icon">
+                                    💡
+                                </div>
+
+                                <h3>
+                                    Suggestions
+                                </h3>
+
+                                <span class="card-count">
+                                    ${suggestions.length}
+                                </span>
+
+                            </div>
+
+
+                            <ul class="result-list">
+
+                                ${createList(suggestions)}
+
+                            </ul>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+
+    /* =========================================================
+       CREATE NORMAL LIST
+    ========================================================= */
+
+    function createList(items) {
+
+
+        if (
+            !Array.isArray(items) ||
+            items.length === 0
+        ) {
+
+            return `
+                <li>
+                    No information available
+                </li>
+            `;
+
+        }
+
+
+        return items
+
+            .map(
+                item => `
+                    <li>
+                        ${escapeHtml(item)}
+                    </li>
+                `
+            )
+
+            .join("");
+
+    }
+
+
+
+    /* =========================================================
+       CREATE SKILL TAGS
+    ========================================================= */
+
+    function createSkillTags(items) {
+
+
+        if (
+            !Array.isArray(items) ||
+            items.length === 0
+        ) {
+
+            return `
+                <span class="skill">
+                    No skills available
+                </span>
+            `;
+
+        }
+
+
+        return items
+
+            .map(
+                item => `
+                    <span class="skill">
+                        ${escapeHtml(item)}
+                    </span>
+                `
+            )
+
+            .join("");
+
+    }
+
+
+
+    /* =========================================================
+       CREATE JOB TAGS
+    ========================================================= */
+
+    function createJobTags(items) {
+
+
+        if (
+            !Array.isArray(items) ||
+            items.length === 0
+        ) {
+
+            return `
+                <span class="job-tag">
+                    No suitable roles found
+                </span>
+            `;
+
+        }
+
+
+        return items
+
+            .map(
+                item => `
+                    <span class="job-tag">
+                        ${escapeHtml(item)}
+                    </span>
+                `
+            )
+
+            .join("");
+
+    }
+
+
+
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>
