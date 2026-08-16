@@ -1,7 +1,4 @@
-/* =========================================================
-   GET ELEMENTS
-========================================================= */
-
+   // GET ELEMENTS
 const fileInput =
     document.getElementById("resumeFile");
 
@@ -26,11 +23,7 @@ const result =
 const welcome =
     document.getElementById("welcome");
 
-
-/* =========================================================
-   FILE SELECTION
-========================================================= */
-
+   // FILE SELECTION
 fileInput.addEventListener(
     "change",
     function () {
@@ -46,144 +39,85 @@ fileInput.addEventListener(
             fileType.style.display = "none";
 
             return;
-
         }
 
-
         /* Check PDF */
-
         if (
             file.type !== "application/pdf" &&
             !file.name
                 .toLowerCase()
                 .endsWith(".pdf")
         ) {
-
             alert("Please select a PDF file.");
-
             fileInput.value = "";
-
             return;
-
         }
 
-
         /* Display filename */
-
         filePlaceholder.style.display = "none";
-
         fileName.style.display = "block";
-
         fileType.style.display = "block";
-
         fileName.textContent = file.name;
-
         fileType.textContent = "PDF document";
-
     }
 );
 
-
-/* =========================================================
-   ANALYZE BUTTON
-========================================================= */
-
+   // ANALYZE BUTTON
 analyzeButton.addEventListener(
     "click",
     analyzeResume
 );
 
-
-/* =========================================================
-   ANALYZE RESUME
-========================================================= */
-
+   // ANALYZE RESUME
 async function analyzeResume() {
-
     console.log("Analyze Resume clicked");
 
-
-    /* -----------------------------------------------------
-       CHECK FILE
-    ----------------------------------------------------- */
-
+       // CHECK FILE
     if (!fileInput.files || fileInput.files.length === 0) {
-
         alert("Please select a PDF file first.");
-
         return;
-
     }
-
 
     const file =
         fileInput.files[0];
 
-
-    /* -----------------------------------------------------
-       CHECK PDF
-    ----------------------------------------------------- */
-
+       // CHECK PDF
     if (
         file.type !== "application/pdf" &&
         !file.name
             .toLowerCase()
             .endsWith(".pdf")
     ) {
-
         alert("Please select a PDF file.");
-
         return;
-
     }
-
 
     console.log(
         "Selected file:",
         file.name
     );
 
-
-    /* -----------------------------------------------------
-       CREATE FORM DATA
-    ----------------------------------------------------- */
-
+       // CREATE FORM DATA
     const formData =
         new FormData();
-
     formData.append(
         "file",
         file
     );
 
-
-    /* -----------------------------------------------------
-       SHOW LOADING
-    ----------------------------------------------------- */
-
+       // SHOW LOADING
     loading.style.display = "flex";
-
     analyzeButton.disabled = true;
-
     analyzeButton.querySelector(
         "span:first-child"
     ).textContent = "Analyzing...";
 
-
     /* Clear old result */
-
     result.innerHTML = "";
 
-
     try {
-
-
-        /* =================================================
-           BACKEND REQUEST
-
-           DO NOT CHANGE THIS ENDPOINT
-        ================================================= */
-
+           // BACKEND REQUEST
+           // DO NOT CHANGE THIS ENDPOINT
         const response =
             await fetch(
                 "/api/resume/analyze-pdf",
@@ -193,98 +127,58 @@ async function analyzeResume() {
                 }
             );
 
-
         console.log(
             "Response status:",
             response.status
         );
 
-
-        /* -------------------------------------------------
-           READ RESPONSE
-        ------------------------------------------------- */
-
+           // READ RESPONSE
         const responseText =
             await response.text();
-
 
         console.log(
             "Backend response:",
             responseText
         );
 
-
-        /* -------------------------------------------------
-           CHECK HTTP STATUS
-        ------------------------------------------------- */
-
+           // CHECK HTTP STATUS
         if (!response.ok) {
-
             throw new Error(
                 "Server returned HTTP " +
                 response.status +
                 "\n\n" +
                 responseText
             );
-
         }
-
-
-        /* -------------------------------------------------
-           PARSE JSON
-        ------------------------------------------------- */
-
+           // PARSE JSON
         let data;
-
-
         try {
-
             data =
                 JSON.parse(responseText);
-
         }
-
         catch (error) {
-
             console.error(
                 "JSON parsing error:",
                 error
             );
-
             throw new Error(
                 "Backend returned an invalid JSON response.\n\n" +
                 responseText
             );
-
         }
-
 
         console.log(
             "Parsed response:",
             data
         );
 
-
-        /* -------------------------------------------------
-           DISPLAY RESULT
-        ------------------------------------------------- */
-
+           // DISPLAY RESULT
         displayResult(data);
-
-
-        /* -------------------------------------------------
-           HIDE WELCOME
-        ------------------------------------------------- */
-
+           // HIDE WELCOME
         welcome.style.display = "none";
-
         result.style.display = "block";
 
-
-        /* -------------------------------------------------
-           SCROLL TO RESULT
-        ------------------------------------------------- */
-
+           // SCROLL TO RESULT
         setTimeout(
             function () {
 
@@ -308,16 +202,10 @@ async function analyzeResume() {
             error
         );
 
-
         welcome.style.display = "none";
-
         result.style.display = "block";
-
-
         result.innerHTML = `
-
             <div class="error-card">
-
                 <h2>
                     ⚠ Analysis Failed
                 </h2>
@@ -331,14 +219,10 @@ async function analyzeResume() {
         `;
 
     }
-
-
     finally {
 
         loading.style.display = "none";
-
         analyzeButton.disabled = false;
-
         analyzeButton.querySelector(
             "span:first-child"
         ).textContent = "Analyze Resume";
@@ -347,29 +231,19 @@ async function analyzeResume() {
 
 }
 
-
-/* =========================================================
-   DISPLAY RESULT
-========================================================= */
-
+   // DISPLAY RESULT
 function displayResult(data) {
-
-
     const skills =
         normalizeArray(data.skills);
-
 
     const strengths =
         normalizeArray(data.strengths);
 
-
     const weaknesses =
         normalizeArray(data.weaknesses);
 
-
     const recommendedSkills =
         normalizeArray(data.recommendedSkills);
-
 
     const jobRoles =
         normalizeArray(data.suitableJobRoles);
@@ -378,81 +252,52 @@ function displayResult(data) {
     const suggestions =
         normalizeArray(data.suggestions);
 
-
     const overallAssessment =
         data.overallAssessment
             ? data.overallAssessment
             : "No overall assessment available.";
 
-
     result.innerHTML = `
 
         <div class="chat-response">
 
-
             <!-- AI AVATAR -->
-
             <div class="ai-avatar">
                 AI
             </div>
 
-
             <!-- RESPONSE -->
-
             <div class="response-content">
-
-
                 <!-- HEADER -->
-
                 <div class="response-header">
-
                     <span class="response-name">
                         Resume AI
                     </span>
-
                     <span class="response-status">
                         Analysis complete
                     </span>
-
                 </div>
-
-
                 <!-- TITLE -->
-
                 <div class="analysis-heading">
-
                     <h1>
                         Resume Analysis
                     </h1>
-
                     <p>
                         Here's a detailed analysis of your
                         resume and career profile.
                     </p>
-
                 </div>
-
 
                 <!-- SUCCESS -->
-
                 <div class="success-message">
-
                     <span class="success-dot"></span>
-
                     Resume analyzed successfully
-
                 </div>
 
-
-                <!-- =========================================
-                     OVERALL ASSESSMENT
-                ========================================== -->
-
+<!--                     OVERALL ASSESSMENT-->
                 <div class="assessment-card">
 
-
                     <div class="assessment-title">
-
                         <div class="assessment-icon">
                             ✦
                         </div>
@@ -469,35 +314,21 @@ function displayResult(data) {
                         ${escapeHtml(
         overallAssessment
     )}
-
                     </p>
-
 
                 </div>
 
-
-                <!-- =========================================
-                     RESULT GRID
-                ========================================== -->
-
+<!--                     RESULT GRID-->
                 <div class="result-grid">
-
-
                     <!-- SKILLS -->
-
                     <div class="analysis-card full-width">
-
-
                         <div class="card-heading">
-
                             <div class="card-icon">
                                 ⚡
                             </div>
-
                             <h3>
                                 Skills
                             </h3>
-
                             <span class="card-count">
                                 ${skills.length}
                             </span>
@@ -510,21 +341,13 @@ function displayResult(data) {
                             ${createSkillTags(
         skills
     )}
-
                         </div>
-
-
                     </div>
-
-
                     <!-- STRENGTHS -->
-
                     <div class="
                         analysis-card
                         strength-card
                     ">
-
-
                         <div class="card-heading">
 
                             <div class="card-icon">
@@ -541,29 +364,21 @@ function displayResult(data) {
 
                         </div>
 
-
                         <ul class="analysis-list">
 
                             ${createList(
         strengths
     )}
-
                         </ul>
-
-
                     </div>
 
-
                     <!-- WEAKNESSES -->
-
                     <div class="
                         analysis-card
                         weakness-card
                     ">
 
-
                         <div class="card-heading">
-
                             <div class="card-icon">
                                 !
                             </div>
@@ -686,59 +501,34 @@ function displayResult(data) {
                             ${createList(
         suggestions
     )}
-
                         </ul>
-
-
                     </div>
-
-
                 </div>
-
-
             </div>
-
         </div>
 
     `;
 
 }
-
-
-/* =========================================================
-   NORMALIZE ARRAY
-========================================================= */
-
+   // NORMALIZE ARRAY
 function normalizeArray(value) {
 
     if (Array.isArray(value)) {
-
         return value;
-
     }
-
 
     if (
         value === null ||
         value === undefined ||
         value === ""
     ) {
-
         return [];
-
     }
-
-
     return [String(value)];
-
 }
 
-
-/* =========================================================
-   CREATE LIST
-========================================================= */
-
-function createList(items) {
+   // CREATE LIST
+   function createList(items) {
 
     if (
         !Array.isArray(items) ||
@@ -753,7 +543,6 @@ function createList(items) {
 
     }
 
-
     return items
         .map(
             item => `
@@ -766,12 +555,8 @@ function createList(items) {
 
 }
 
-
-/* =========================================================
-   CREATE SKILL TAGS
-========================================================= */
-
-function createSkillTags(items) {
+   // CREATE SKILL TAGS
+   function createSkillTags(items) {
 
     if (
         !Array.isArray(items) ||
@@ -800,10 +585,7 @@ function createSkillTags(items) {
 }
 
 
-/* =========================================================
-   CREATE JOB TAGS
-========================================================= */
-
+   // CREATE JOB TAGS
 function createJobTags(items) {
 
     if (
@@ -833,47 +615,34 @@ function createJobTags(items) {
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
+   // ESCAPE HTML
 function escapeHtml(value) {
 
     if (
         value === null ||
         value === undefined
     ) {
-
         return "";
-
     }
-
-
     return String(value)
-
         .replace(
             /&/g,
             "&amp;"
         )
-
         .replace(
             /</g,
             "&lt;"
         )
-
         .replace(
             />/g,
             "&gt;"
         )
-
         .replace(
             /"/g,
             "&quot;"
         )
-
         .replace(
             /'/g,
             "&#039;"
         );
-
 }

@@ -14,7 +14,12 @@
           href="/css/chat.css">
 
 </head>
-
+<style>
+    .sidebar-label {
+        color: #4a4a4a;
+        font-size: 14px;
+    }
+</style>
 
 <body>
 
@@ -72,8 +77,8 @@
 
         <div class="sidebar-section">
 
-            <div class="sidebar-label">
-                Workspace
+            <div class="sidebar-label" style="color: blue">
+                <b>Workspace</b>
             </div>
 
 
@@ -106,61 +111,20 @@
 
         </div>
 
+        <!-- Chat History -->
+        <div class="sidebar-section chat-history-section">
 
-        <!-- Chat Suggestions -->
-
-        <div class="sidebar-section">
-
-            <div class="sidebar-label">
-                Try asking
+            <div class="sidebar-label" style="color: blue;">
+                <b>Chat History</b>
             </div>
 
-
-            <button
-                    class="sidebar-prompt"
-                    onclick="sendQuickMessage('Which job roles are suitable for me?')">
-
-                <span>→</span>
-
-                Suitable job roles
-
-            </button>
-
-
-            <button
-                    class="sidebar-prompt"
-                    onclick="sendQuickMessage('What skills should I learn for a Java Developer job?')">
-
-                <span>→</span>
-
-                Skills to learn
-
-            </button>
-
-
-            <button
-                    class="sidebar-prompt"
-                    onclick="sendQuickMessage('How should I prepare for a Java Developer interview?')">
-
-                <span>→</span>
-
-                Interview preparation
-
-            </button>
-
-
-            <button
-                    class="sidebar-prompt"
-                    onclick="sendQuickMessage('How can I improve my resume?')">
-
-                <span>→</span>
-
-                Improve my resume
-
-            </button>
+            <div id="chatHistory">
+                <div class="chat-history-empty">
+                    No previous chats
+                </div>
+            </div>
 
         </div>
-
 
         <!-- Sidebar bottom -->
 
